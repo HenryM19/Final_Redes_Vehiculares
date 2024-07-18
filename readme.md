@@ -86,7 +86,7 @@ Para el envío de datos se definió un formato de trama. La trama es un vector d
 
 
 ## Compatibilidad de códigos
-Para el que el código del emisor logre pueda ser cargado en el Heltec V3, es necesario agregar la Board del Heltec a Arduino IDE, posteriormente se debe seleccionar la placa Wifi LoRa 32(V3) como se muestra en la siguiente figura.
+Para que el código del emisor pueda ser cargado en el Heltec V3, es necesario agregar la Board del Heltec a Arduino IDE, posteriormente se debe seleccionar la placa Wifi LoRa 32(V3) como se muestra en la siguiente figura.
 
 <div align="center">
   <img src="resources/images/placa_heltec.png" alt="Placa emisor" width="65%"/>
