@@ -64,12 +64,12 @@ En la siguiente figura se presenta el funcionamiento del programa.
 
 
 ## Trama de envío entre Heltec emisor y recetor 
-Para el envío de datos se definió un formato de trama. La trama es un vector de elementos uint8_t, donde:
+Para el envío de datos se definió un formato de trama. La trama es un vector de elementos uint8_t, el tamaño de esta trama depende de la cantidad de instrucciones a enviar. El formato de trama es el siguiente:
 
-1. **Primer byte**: Indica la cantidad total de instrucciones, sin contar las instrucciones "TAKEOFF" y "LAND" para despegue y aterrizaje. Si solo se desea realizar el despegue y aterrizaje, este primer byte deberá tener todos sus bits en 1 (`0xFF`), lo cual indicará que se desea ejecutar únicamente las instrucciones "TAKEOFF" y "LAND". Hasta el momento se ha definido 4 bits para la cantidad de instrucciones, es decir 16 instrucciones, por lo tanto se pueden enviar hasta 16 instrucciones para una ruta, sin embargo, esto puede ser desarrollado posteriormente. 
+1. **Primer byte o byte 0 de la trama**: Indica la cantidad total de instrucciones, sin contar las instrucciones "TAKEOFF" y "LAND" para despegue y aterrizaje. Si solo se desea realizar el despegue y aterrizaje, este primer byte deberá tener todos sus bits en 1 (`0xFF`), lo cual indicará que se desea ejecutar únicamente las instrucciones "TAKEOFF" y "LAND". Hasta el momento se ha definido 4 bits para la cantidad de instrucciones, es decir 16 instrucciones, por lo tanto se pueden enviar hasta 16 instrucciones para una ruta, sin embargo, esto puede ser desarrollado posteriormente. 
 
-2. **Instrucciones con parámetros**: Para las otras 6 instrucciones que requieren parámetros de distancia a recorrer:
-    - **Dos bytes** son utilizados por cada instrucción, en donde se puede definir hasta 16 instrucciones por el momento. 
+2. **Instrucciones con parámetros**: Las instrucciones a enviar utilzian dos bytes para definir la instrucción y el parámetro de distancia en centímetros a recorrer.
+    - **Dos bytes** son utilizados por cada instrucción. 
         - El **primer byte** contiene los 4 bits más significativos para la instrucción. Los 4 bits utilizados para la instrucción permiten gestionar hasta 16 instrucciones diferentes. No obstante, en este proyecto, solo se utilizan las 6 instrucciones básicas:
           - **RIGHT**
           - **LEFT**
@@ -80,5 +80,5 @@ Para el envío de datos se definió un formato de trama. La trama es un vector d
         - El bit menos significativo del primer byte junto con los 8 bits del segundo byte se utilizan para el parámetro de la instrucción, es decir, la distancia en centímetros. Esto da un total de 9 bits asignados para la distancia, lo que permite un valor máximo de 512. Sin embargo, el rango máximo permitido por el dron es de 500 centímetros.
 
 <div align="center">
-  <img src="resources/images/trama.png" alt="Trama de envío mediante LoRA" width="45%"/>
+  <img src="resources/images/trama.png" alt="Trama de envío mediante LoRA" width="80%"/>
 </div>
