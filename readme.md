@@ -23,7 +23,7 @@ La figura anterior muestra las dos opciones de vuelo programadas para el control
 ### Circuito del control 
 Para el sistema de control se ha implementado un control remoto que permite enviar la instrucciones al Dron Tello. Las conexiones del circuito para el control remoto se presentan a continuación:
 <div align="center">
-  <img src="resources/images/circuito.jpg" alt="Conexiones circuito" width="45%"/>
+  <img src="resources/images/circuito.jpg" alt="Conexiones circuito" width="70%"/>
 </div>
 
 
@@ -82,4 +82,12 @@ Para el envío de datos se definió un formato de trama. La trama es un vector d
 
 <div align="center">
   <img src="resources/images/trama.png" alt="Trama de envío mediante LoRA" width="80%"/>
+</div>
+
+
+## Compatibilidad de códigos
+Para el que el código del emisor logre pueda ser cargado en el Heltec V3, es necesario agregar la Board del Heltec a Arduino IDE, posteriormente se debe seleccionar la placa Wifi LoRa 32(V3) como se muestra en la siguiente figura.
+
+<div align="center">
+  <img src="resources/images/placa_heltec.png" alt="Placa emisor" width="65%"/>
 </div>
