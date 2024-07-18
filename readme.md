@@ -20,13 +20,11 @@ El sistema de control del Dron DJI Tello ofrece dos opciones de vuelo, la primer
 
 La figura anterior muestra las dos opciones de vuelo programadas para el control del dron y presenta una tercera opción correspondiente al control en tiempo real. Esta opción se incluye porque el sistema de control está diseñado con la proyección de incluir este modo de operación. Sin embargo, al momento de entregar este informe de proyecto, la programación de esta función no está finalizada. Por ello, no se incluye como una opción dentro de los planes de vuelo del dron, sino como una proyección para futuros desarrollos del proyecto.
 
-
-### Configuración de Arduino IDE
-Para que el proyecto del emisor funcione en el Heltec V3 es necesario agregar la placa Heltec V3  
-
 ### Circuito del control 
-Adicionalmente, el sistema transmisor cuenta con un control con el cual se envía las  instrucciones al Dron Tello. El esquema del circuito que lo compone se presenta a continuación:
-
+Para el sistema de control se ha implementado un control remoto que permite enviar la instrucciones al Dron Tello. Las conexiones del circuito para el control remoto se presentan a continuación:
+<div align="center">
+  <img src="resources/images/circuito.jpg" alt="Conexiones circuito" width="45%"/>
+</div>
 
 
 ### Sistema de recepción
@@ -61,6 +59,9 @@ En la siguiente figura se presenta el funcionamiento del programa.
 </div>
 
 ## Diseño de elemento de sujeción 
+Para el montaje del módulo Heltec V3 sobre el dron Tello, se ha diseñado un soporte que permite la sujeción de la antena de comunicación LoRa y una batería de alimentación para el módulo LoRa. El diseño en 3D, realizado en Autodesk Fusion 360, asegura que cada componente (Heltec V3, batería de 3.7 V y antena LoRa) esté centrado en el elemento de sujeción. Esto mantiene el centro de masa alineado con el centro del soporte, distribuyendo uniformemente el peso entre los motores del dron DJI Tello. 
+
+El presente repositorio también incluye los diseños de estos elementos de sujeción. 
 
 
 ## Trama de envío entre Heltec emisor y recetor 
