@@ -6,7 +6,7 @@ Este repositorio contiene la información sobre cómo controlar movimientos bás
   <img src="resources/images/esquema.png" alt="Esquema del Proyecto" width="65%"/>
 </div>
 
-Este proyecto consiste en controlar un dron DJI Tello usando LoRa, con el objetivo de enviar instrucciones desde un control hacia el dron a larga distancia. El esquema del funcionamiento del sistema se presenta en la Figura anterior. Para la ejecución de cada instrucción en el dron es necesario primero que el emisor reciba mediante un teclado qué comandos se desea enviar. El envío de estos comandos hacia el receptor que tiene conexión con el dron se realiza mediante mensajes LoRa en forma de cadena de texto, para lo cual se ha realizado un diccionario, que es usado por el receptor para definir qué instrucción será enviada al dron según el mensaje que ha recibido.
+Este proyecto está realizado en Arduino IDE y consiste en controlar un dron DJI Tello usando LoRa, con el objetivo de enviar instrucciones desde un control hacia el dron a larga distancia. El esquema del funcionamiento del sistema se presenta en la Figura anterior. Para la ejecución de cada instrucción en el dron es necesario primero que el emisor reciba mediante un teclado qué comandos se desea enviar. El envío de estos comandos hacia el receptor que tiene conexión con el dron se realiza mediante mensajes LoRa en forma de cadena de texto, para lo cual se ha realizado un diccionario, que es usado por el receptor para definir qué instrucción será enviada al dron según el mensaje que ha recibido.
 
 Para la implementación de LoRa se usa la librería SX126x-Arduino disponible en [este repositorio de GitHub](https://github.com/ElectronicCats/LoRaWAN-SX126x). El repositorio detalla las configuraciones de LoRa necesarias para los parámetros como frecuencia de operación, potencia de transmisión, factor de ensanchamiento, etc. Para la conexión del módulo receptor con el Dron Tello se usa la librería telloArduino disponible en [este repositorio en GitHub](https://github.com/akshayvernekar/telloArduino).
 
@@ -18,9 +18,16 @@ El sistema de control del Dron DJI Tello ofrece dos opciones de vuelo, la primer
   <img src="resources/images/control.png" alt="Diagrama de flujo para el control de los escenarios de vuelo" width="65%"/>
 </div>
 
-**Figura**: Diagrama de flujo para el control de los escenarios de vuelo.
-
 La figura anterior muestra las dos opciones de vuelo programadas para el control del dron y presenta una tercera opción correspondiente al control en tiempo real. Esta opción se incluye porque el sistema de control está diseñado con la proyección de incluir este modo de operación. Sin embargo, al momento de entregar este informe de proyecto, la programación de esta función no está finalizada. Por ello, no se incluye como una opción dentro de los planes de vuelo del dron, sino como una proyección para futuros desarrollos del proyecto.
+
+
+### Configuración de Arduino IDE
+Para que el proyecto del emisor funcione en el Heltec V3 es necesario agregar la placa Heltec V3  
+
+### Circuito del control 
+Adicionalmente, el sistema transmisor cuenta con un control con el cual se envía las  instrucciones al Dron Tello. El esquema del circuito que lo compone se presenta a continuación:
+
+
 
 ### Sistema de recepción
 
@@ -34,7 +41,8 @@ El sistema de recepción está compuesto por:
 
 El receptor utiliza comunicación LoRa y Wifi, las cuales permiten recibir los mensajes de control desde el emisor y enviar las instrucciones al dron Tello respectivamente. En la siguiente tabla se presentan los comandos enviados al dron Tello según el mensaje recibido mediante LoRa.
 
-En la siguiente tabla se presentan los comandos implementados y probados, dado el mensaje enviado por el Heltec V3 mediante LoRa, el HeltecV3 receptor envía mediante Wifi las instrucciones al dron Tello. 
+En la siguiente tabla se presentan los comandos implementados y probados, dado el mensaje enviado por el Heltec V3 mediante LoRa, el HeltecV3 receptor envía mediante Wifi las instrucciones al dron Tello. En este proyecto se implementaron las instrucciones básicas, sin embargo, es posible agregar nuevas funcionalidades al sistema considerando los movimientos que se encuentran en el Manual del DJI Tello
+
 | **Mensaje Recibido (LoRa)** | **Comando Ejecutado (Tello)** | **Descripción** |
 |-----------------------------|-------------------------------|-----------------|
 | UP,50                       | tello.up(distancia);           | Hace que el dron suba 50 cm. |
@@ -49,9 +57,28 @@ En la siguiente tabla se presentan los comandos implementados y probados, dado e
 En la siguiente figura se presenta el funcionamiento del programa.
 
 <div align="center">
-  <img src="resources/images/receptor.png" alt="Diagrama de flujo del proceso en el receptor" width="65%"/>
+  <img src="resources/images/receptor.png" alt="Diagrama de flujo del proceso en el receptor" width="45%"/>
 </div>
 
-**Figura**: Diagrama de flujo del proceso en el receptor.
-
 ## Diseño de elemento de sujeción 
+
+
+## Trama de envío entre Heltec emisor y recetor 
+Para el envío de datos se definió un formato de trama. La trama es un vector de elementos uint8_t, donde:
+
+1. **Primer byte**: Indica la cantidad total de instrucciones, sin contar las instrucciones "TAKEOFF" y "LAND" para despegue y aterrizaje. Si solo se desea realizar el despegue y aterrizaje, este primer byte deberá tener todos sus bits en 1 (`0xFF`), lo cual indicará que se desea ejecutar únicamente las instrucciones "TAKEOFF" y "LAND". Hasta el momento se ha definido 4 bits para la cantidad de instrucciones, es decir 16 instrucciones, por lo tanto se pueden enviar hasta 16 instrucciones para una ruta, sin embargo, esto puede ser desarrollado posteriormente. 
+
+2. **Instrucciones con parámetros**: Para las otras 6 instrucciones que requieren parámetros de distancia a recorrer:
+    - **Dos bytes** son utilizados por cada instrucción, en donde se puede definir hasta 16 instrucciones por el momento. 
+        - El **primer byte** contiene los 4 bits más significativos para la instrucción. Los 4 bits utilizados para la instrucción permiten gestionar hasta 16 instrucciones diferentes. No obstante, en este proyecto, solo se utilizan las 6 instrucciones básicas:
+          - **RIGHT**
+          - **LEFT**
+          - **UP**
+          - **DOWN**
+          - **FORWARD**
+          - **BACK**
+        - El bit menos significativo del primer byte junto con los 8 bits del segundo byte se utilizan para el parámetro de la instrucción, es decir, la distancia en centímetros. Esto da un total de 9 bits asignados para la distancia, lo que permite un valor máximo de 512. Sin embargo, el rango máximo permitido por el dron es de 500 centímetros.
+
+<div align="center">
+  <img src="resources/images/trama.png" alt="Trama de envío mediante LoRA" width="45%"/>
+</div>
