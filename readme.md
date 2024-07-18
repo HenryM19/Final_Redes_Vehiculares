@@ -12,7 +12,7 @@ Para la implementación de LoRa se usa la librería SX126x-Arduino disponible en
 
 ### Sistema de control
 
-El sistema de control del Dron DJI Tello ofrece dos opciones de vuelo, la primera corresponde a una ejecución de un plan de vuelo preprogramado almacenado en la memoria del microcontrolador, mientras que la segunda funciona al establecer un vuelo autónomo mediante interacción con el Heltec LoRa, permitiendo la creación de una ruta dinámica.
+El sistema de control del Dron DJI Tello ofrece dos opciones de vuelo disponibles por el momento (la opción de vuelo en tiempo real aún no está implementada), la primera corresponde a una ejecución de un plan de vuelo preprogramado almacenado en la memoria del microcontrolador, mientras que la segunda funciona al establecer un vuelo autónomo mediante interacción con el Heltec LoRa, permitiendo la creación de una ruta dinámica.
 
 <div align="center">
   <img src="resources/images/control.png" alt="Diagrama de flujo para el control de los escenarios de vuelo" width="65%"/>
@@ -64,7 +64,7 @@ Para el montaje del módulo Heltec V3 sobre el dron Tello, se ha diseñado un so
 El presente repositorio también incluye los diseños de estos elementos de sujeción. 
 
 
-## Trama de envío entre Heltec emisor y recetor 
+## Trama de envío entre Heltec emisor y receptor 
 Para el envío de datos se definió un formato de trama. La trama es un vector de elementos uint8_t, el tamaño de esta trama depende de la cantidad de instrucciones a enviar. El formato de trama es el siguiente:
 
 1. **Primer byte o byte 0 de la trama**: Indica la cantidad total de instrucciones, sin contar las instrucciones "TAKEOFF" y "LAND" para despegue y aterrizaje. Si solo se desea realizar el despegue y aterrizaje, este primer byte deberá tener todos sus bits en 1 (`0xFF`), lo cual indicará que se desea ejecutar únicamente las instrucciones "TAKEOFF" y "LAND". Hasta el momento se ha definido 4 bits para la cantidad de instrucciones, es decir 16 instrucciones, por lo tanto se pueden enviar hasta 16 instrucciones para una ruta, sin embargo, esto puede ser desarrollado posteriormente. 
