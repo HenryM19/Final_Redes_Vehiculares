@@ -61,7 +61,7 @@ En la siguiente figura se presenta el funcionamiento del programa.
 ## Diseño de elemento de sujeción 
 Para el montaje del módulo Heltec V3 sobre el dron Tello, se ha diseñado un soporte que permite la sujeción de la antena de comunicación LoRa y una batería de alimentación para el módulo LoRa. El diseño en 3D, realizado en Autodesk Fusion 360, asegura que cada componente (Heltec V3, batería de 3.7 V y antena LoRa) esté centrado en el elemento de sujeción. Esto mantiene el centro de masa alineado con el centro del soporte, distribuyendo uniformemente el peso entre los motores del dron DJI Tello. 
 
-El presente repositorio también incluye los diseños de estos elementos de sujeción. 
+Este repositorio también incluye los diseños de estos elementos de sujeción. 
 <div align="center">
   <img src="resources/images/sujecion.jpg" alt="Diseño" width="45%"/>
 </div>
