@@ -1,6 +1,7 @@
 #include <LoRaWan-SX126x.h>  //http://librarymanager/All#SX126x
 #include <SPI.h>
 #include <Tello.h>
+#include "HT_SSD1306Wire.h"
 
 
 // CONFIGURACION TELLO
@@ -56,13 +57,42 @@ void init_lora();
 void ejecutar_comando(char *mensaje);
 void tiempo_espera(int distancia);
 void ejecutar_comando(uint8_t instruccion, uint16_t parametro);
+int readBatLevel();
 
+// Inicalizacion de la pantalla
+SSD1306Wire display(0x3c, 500000, SDA_OLED, SCL_OLED, GEOMETRY_128_64, RST_OLED);
+
+// Nivel de bateria
+#define VBAT_PIN 1
+#define VBAT_READ_CNTRL_PIN 37 // Heltec GPIO to toggle VBatt read connection …
+// Also, take care NOT to have ADC read connection
+// in OPEN DRAIN when GPIO goes HIGH
+#define ADC_READ_STABILIZE 10 // in ms (delay from GPIO control and ADC connections times)
+
+int nVoltage = readBatLevel(); //Lee nivel de bateria
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 void setup()
 {
+  // turn on vbat read
+  pinMode(VBAT_READ_CNTRL_PIN,OUTPUT);
+  digitalWrite(VBAT_READ_CNTRL_PIN, LOW);
+
+  display.init();
+  display.clear();
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(20, 0, "U. CUENCA");
+  display.setFont(ArialMT_Plain_10);
+  // Dibujar el texto en la pantalla
+  display.drawString(0, 20, "J. Cambisaca");
+  display.drawString(0, 35, "H. Castro");
+  display.drawString(0, 50, "H. Maldonado");
+  display.display();
+
+  nVoltage = readBatLevel(); //Leer nivel de bateria
+
   init_lora();
   connectToWiFi(networkName, networkPswd);
 }
@@ -132,6 +162,7 @@ void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr)
     }
     ejecutar_comando(32, 0); // Comando de LAND
   }
+  Radio.Rx(RX_TIMEOUT_VALUE);
 }
 
 /**@brief Function to be executed on Radio Rx Timeout event*/
@@ -160,6 +191,9 @@ void connectToWiFi(const char * ssid, const char * pwd) {
 
 //wifi event handler
 void WiFiEvent(WiFiEvent_t event) {
+  String aux = "";
+  IPAddress ip = WiFi.localIP();
+  String networkNameString = String(networkName);
   switch (event) 
   {
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -170,11 +204,52 @@ void WiFiEvent(WiFiEvent_t event) {
       //initialise Tello after we are connected
       tello.init();
       connected = true;
+
+      //Imprimir por pantalla
+      display.clear();
+      // Configurar el tamanio de la fuente
+      display.setFont(ArialMT_Plain_10);
+      // Dibujar el texto en la pantalla
+      display.drawString(15, 0, "WIFI CONECTADO");
+      aux = "SSID: " + networkNameString;
+      display.drawString(10, 20, aux);
+      ip = WiFi.localIP();
+      aux = "IP: " + ip.toString();
+      //Serial.println(ip.toString());
+      //Serial.println(aux);
+      display.drawString(10, 35, aux);
+      display.drawString(10, 50, "Bateria:");
+      nVoltage = readBatLevel(); //Leer nivel de bateria
+      display.drawString(50, 50, String(nVoltage));
+      Serial.println(nVoltage);
+      display.display();
+      delay(5000);
+      display.clear();
+      display.display();
       break;
     case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     //case SYSTEM_EVENT_STA_DISCONNECTED:
       Serial.println("WiFi lost connection");
       connected = false;
+
+      //Imprimir por pantalla
+      display.clear();
+      // Configurar el tamanio de la fuente
+      display.setFont(ArialMT_Plain_10);
+      // Dibujar el texto en la pantalla
+      display.drawString(8, 0, "WIFI DESCONECTADO");
+      aux = "SSID: " + networkNameString;
+      display.drawString(10, 20, aux);
+      ip = WiFi.localIP();
+      aux = "IP: " + ip.toString();
+      //Serial.println(ip.toString());
+      //Serial.println(aux);
+      display.drawString(10, 35, aux);
+      display.drawString(10, 50, "Bateria:");
+      nVoltage = readBatLevel(); //Leer nivel de bateria
+      display.drawString(50, 50, String(nVoltage));
+      Serial.println(nVoltage);
+      display.display();
       //connectToWiFi(networkName, networkPswd);
       break;
   }
@@ -293,11 +368,19 @@ void ejecutar_comando(uint8_t instruccion, uint16_t parametro) {
     }
 
     // Agregar tiempo de espera entre comandos
-    delay(5000);  // Delay de 5 segundos para cada comando
+    delay(3000);  // Delay de 5 segundos para cada comando
 }
 
 void tiempo_espera(int distancia){
-  int tiempo=distancia*1;
+  int tiempo=distancia*10;
   delay(tiempo);
+}
+
+int readBatLevel(){
+  int analogValue = analogRead(VBAT_PIN);
+  Serial.println(analogValue);
+  float voltage = 0.097752 * analogValue;  // Calcular el voltaje
+  int roundedVoltage = round(voltage);  // Redondear el voltaje al entero más cercano
+  return roundedVoltage;
 }
 
