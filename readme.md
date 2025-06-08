@@ -93,3 +93,7 @@ Para que el código del emisor pueda ser cargado en el Heltec V3, es necesario a
 <div align="center">
   <img src="resources/images/placa_heltec.png" alt="Placa emisor" width="65%"/>
 </div>
+
+## Recursos útiles
+
+- [Conexión del ESP32 con el dron Tello (Repositorio de ejemplo)](https://github.com/sagar-koirala/TelloESP32/tree/master)
